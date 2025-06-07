@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text/Link QR Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            overflow-y: auto;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin: 20px;
+            margin-top: 100px;
+            text-align: center;
+        }
+
+        .header {
+            background-color: #86469C;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form button, .download_qr, .reset_btn {
+            background-color: #86469C;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .form button:hover, .download_qr:hover, .reset_btn:hover {
+            background-color: #BC7FCD;
+        }
+
+        .qr_code {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .footer {
+            background-color: #86469C;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>QR Code Generator</h1>
+    </header>
+
+    <div class="container">
+        <div class="form">
+            <h2>Generate QR Code for Text or Link</h2>
+            <label for="text_input">Enter Text or Link:</label>
+            <input type="text" id="text_input" class="text_input" required><br><br>
+            <button class="generate_qr">Generate QR Code</button>
+        </div>
+        <div class="qr_code">
+            <h2>Your QR Code</h2>
+            <img src="" alt="QR Code" class="get_qr">
+            <br><br>
+            <button class="download_qr">Download QR Code</button>
+            <div><button class="reset_btn">Reset</button></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 QR Code Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelector(".generate_qr").addEventListener("click", function() {
+            var text = document.querySelector(".text_input").value;
+            var qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(text);
+            document.querySelector(".get_qr").src = qr_url;
+            document.querySelector(".form").style.display = "none";
+            document.querySelector(".qr_code").style.display = "block";
+        });
+
+        document.querySelector(".download_qr").addEventListener("click", function() {
+            var qr = document.querySelector(".get_qr");
+            if (qr.src) {
+                var canvas = document.createElement("canvas");
+                var context = canvas.getContext("2d");
+                var img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = function() {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+                    var dataURL = canvas.toDataURL("image/png");
+                    var link = document.createElement("a");
+                    link.href = dataURL;
+                    link.download = "qr_code.png";
+                    link.click();
+                };
+                img.src = qr.src;
+            } else {
+                alert("QR code not generated yet.");
+            }
+        });
+
+        document.querySelector(".reset_btn").addEventListener("click", function() {
+            location.reload();
+        });
+    </script>
+</body>
+</html>
